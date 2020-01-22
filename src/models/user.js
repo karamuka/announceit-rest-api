@@ -1,45 +1,40 @@
 const jwt = require('jsonwebtoken');
+const { isValidEmail } = require('../util').Validators;
 
-const users = [
-  {
-    id: 1,
-    email: '“email”',
-    first_name: 'john',
-    last_name: 'doe',
-    password: '123',
-    phoneNumber: 'String',
-    address: 'String',
-    is_admin: true,
-    token: null,
-  },
-];
+const users = [];
 
 const signUp = (newUser) => new Promise((resolve, reject) => {
-  const userExists = users.find((user) => user.email === newUser.email);
-  if (userExists) {
-    const newError = new Error('an account with that email already exists');
+  if (!isValidEmail(newUser.email)) {
+    const newError = new Error('invalid email address');
     newError.status = 400;
     reject(newError);
   } else {
-    jwt.sign(newUser.email, process.env.TK_CYPHER, (err, token) => {
-      if (err) {
-        reject(err);
-      } else {
-        const userId = Date.now();
-        users.push({
-          ...newUser,
-          id: userId,
-          token,
-        });
-        resolve({
-          id: userId,
-          first_name: newUser.first_name,
-          last_name: newUser.last_name,
-          email: newUser.email,
-          token,
-        });
-      }
-    });
+    const userExists = users.find((user) => user.email === newUser.email);
+    if (userExists) {
+      const newError = new Error('an account with that email already exists');
+      newError.status = 400;
+      reject(newError);
+    } else {
+      jwt.sign(newUser.email, process.env.TK_CYPHER, (err, token) => {
+        if (err) {
+          reject(err);
+        } else {
+          const userId = Date.now();
+          users.push({
+            ...newUser,
+            id: userId,
+            token,
+          });
+          resolve({
+            id: userId,
+            first_name: newUser.first_name,
+            last_name: newUser.last_name,
+            email: newUser.email,
+            token,
+          });
+        }
+      });
+    }
   }
 });
 
