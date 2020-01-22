@@ -4,7 +4,7 @@
   "description": "REST API for announceIT UI",
   "main": "src/app.js",
   "scripts": {
-    "test": "mocha tests",
+    "test": "mocha -w tests",
     "start": "node src/app.js"
   },
   "repository": {

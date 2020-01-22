@@ -35,4 +35,41 @@ describe('User Athentication', () => {
         });
     });
   });
+
+  describe('POST /api/v1/auth/signin', () => {
+    it('should signin a user with valid credentials', (done) => {
+      chai.request(server)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: testUser.email,
+          password: testUser.password,
+        })
+        .end((err, res) => {
+          chai.expect(res.status).to.equal(200);
+          chai.expect(res.body.status).to.equal('success');
+          if (err) {
+            done(err);
+          } else {
+            done();
+          }
+        });
+    });
+    it('should not signin a user with invalid credentials', (done) => {
+      chai.request(server)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'invalid@example.com',
+          password: 'invalid',
+        })
+        .end((err, res) => {
+          chai.expect(res.status).to.equal(401);
+          chai.expect(res.body.status).to.equal('error');
+          if (err) {
+            done(err);
+          } else {
+            done();
+          }
+        });
+    });
+  });
 });
