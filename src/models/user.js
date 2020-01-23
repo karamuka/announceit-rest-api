@@ -44,6 +44,7 @@ const signUp = (newUser) => new Promise((resolve, reject) => {
             last_name: newUser.last_name,
             email: newUser.email,
             token,
+            users,
           });
         }
       });
