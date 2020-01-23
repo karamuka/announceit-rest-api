@@ -39,7 +39,7 @@ app.use((customError, req, res) => {
   res.status(customError.status || 500)
     .json({
       status: 'error',
-      error: customError.message,
+      error: customError.message || customError,
     });
 });
 
