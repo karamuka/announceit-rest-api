@@ -9,7 +9,7 @@ const signUp = (newUser) => new Promise((resolve, reject) => {
     newError.status = 400;
     reject(newError);
   } else if (!isValidPassword(newUser.password)) {
-    const newError = new Error('the provided password is weak, password must be at least 8 characters long and contain numbers and uppercase letters');
+    const newError = new Error('the provided password is weak, password must be at least 8 characters long');
     newError.status = 400;
     reject(newError);
   } else {
@@ -19,7 +19,7 @@ const signUp = (newUser) => new Promise((resolve, reject) => {
       newError.status = 400;
       reject(newError);
     } else {
-      jwt.sign(newUser.email, process.env.TK_CYPHER, (err, token) => {
+      jwt.sign(newUser, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
         if (err) {
           reject(err);
         } else {
@@ -45,7 +45,7 @@ const signUp = (newUser) => new Promise((resolve, reject) => {
 const signIn = ({ email, password }) => new Promise((resolve, reject) => {
   const authUser = users.find((user) => user.email === email && user.password === password);
   if (authUser) {
-    jwt.sign(authUser.email, process.env.TK_CYPHER, (err, token) => {
+    jwt.sign(authUser, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
       if (err) {
         reject(err);
       } else {

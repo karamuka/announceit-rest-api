@@ -15,7 +15,7 @@ class AuthController {
       .catch((err) => {
         res.status(err.status || 500)
           .json({
-            status: 'err',
+            status: 'error',
             error: err.message || err,
           });
       });
