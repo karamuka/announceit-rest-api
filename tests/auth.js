@@ -16,6 +16,11 @@ const testUser = {
   is_admin: true,
 };
 
+const testCrendentials = {
+  email: testUser.email,
+  password: testUser.password,
+};
+
 chai.use(chaiHttp);
 
 describe('User Athentication', () => {
@@ -26,7 +31,6 @@ describe('User Athentication', () => {
         .send(testUser)
         .end((err, res) => {
           chai.expect(res.status).to.equal(201);
-          chai.expect(res.body.status).to.equal('success');
           if (err) {
             done(err);
           } else {
@@ -40,13 +44,9 @@ describe('User Athentication', () => {
     it('should signin a user with valid credentials', (done) => {
       chai.request(server)
         .post('/api/v1/auth/signin')
-        .send({
-          email: testUser.email,
-          password: testUser.password,
-        })
+        .send(testCrendentials)
         .end((err, res) => {
           chai.expect(res.status).to.equal(200);
-          chai.expect(res.body.status).to.equal('success');
           if (err) {
             done(err);
           } else {
@@ -63,7 +63,6 @@ describe('User Athentication', () => {
         })
         .end((err, res) => {
           chai.expect(res.status).to.equal(401);
-          chai.expect(res.body.status).to.equal('error');
           if (err) {
             done(err);
           } else {
