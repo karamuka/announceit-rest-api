@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const { Auth } = require('./routes');
 
 dotenv.config();
+
 const app = express();
 const HOST = process.env.HOST || '0.0.0.0';
 const PORT = process.env.PORT || 3000;
@@ -29,12 +30,12 @@ app.use('/api/v1/auth', Auth);
 
 // handle 404
 app.use((req, res, next) => {
-  const customError = new Error(`${req.url} not found`);
-  customError.status = 404;
-  next(customError);
+  const notFoundError = new Error(`${req.url} not found`);
+  notFoundError.status = 404;
+  next(notFoundError);
 });
 
-// Handle all errors thrown in application
+// Handle all errors thrown in the app
 app.use((customError, req, res) => {
   res.status(customError.status || 500)
     .json({
