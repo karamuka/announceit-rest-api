@@ -1,3 +1,5 @@
-const Validators = require('./validators');
+const cryptr = require('./cryptr');
 
-module.exports = { Validators };
+module.exports = {
+  cryptr,
+};

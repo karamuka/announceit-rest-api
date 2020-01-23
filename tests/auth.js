@@ -4,10 +4,10 @@ const { describe, it } = require('mocha');
 const app = require('../src/app');
 
 const testUser = {
-  email: 'johndoe@example.com',
+  email: 'valid@example.com',
   first_name: 'john',
   last_name: 'doe',
-  password: 'somecomplexpassword',
+  password: 'strongandlong',
   phoneNumber: '250788888888',
   address: 'KG St. 45 AVE',
   is_admin: true,
@@ -29,10 +29,9 @@ describe('User Athentication', () => {
         .end((err, res) => {
           chai.expect(res.status).to.equal(201);
           if (err) {
-            done(err);
-          } else {
-            done();
+            return done(err);
           }
+          return done();
         });
     });
   });
@@ -45,10 +44,9 @@ describe('User Athentication', () => {
         .end((err, res) => {
           chai.expect(res.status).to.equal(200);
           if (err) {
-            done(err);
-          } else {
-            done();
+            return done(err);
           }
+          return done();
         });
     });
     it('should not signin a user with invalid credentials', (done) => {
@@ -61,10 +59,9 @@ describe('User Athentication', () => {
         .end((err, res) => {
           chai.expect(res.status).to.equal(401);
           if (err) {
-            done(err);
-          } else {
-            done();
+            return done(err);
           }
+          return done();
         });
     });
   });
