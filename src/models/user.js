@@ -1,11 +1,15 @@
 const jwt = require('jsonwebtoken');
-const { isValidEmail } = require('../util').Validators;
+const { isValidEmail, isValidPassword } = require('../util').Validators;
 
 const users = [];
 
 const signUp = (newUser) => new Promise((resolve, reject) => {
   if (!isValidEmail(newUser.email)) {
     const newError = new Error('invalid email address');
+    newError.status = 400;
+    reject(newError);
+  } else if (!isValidPassword(newUser.password)) {
+    const newError = new Error('the provided password is weak, password must be at least 8 characters long and contain numbers and uppercase letters');
     newError.status = 400;
     reject(newError);
   } else {
