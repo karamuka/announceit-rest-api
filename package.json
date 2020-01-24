@@ -4,18 +4,12 @@
   "description": "REST API for announceIT UI",
   "main": "src/app.js",
   "scripts": {
-<<<<<<< HEAD
     "test": "npm run build && mocha dist/tests --exit",
     "test-with-coverage": "nyc --reporter=text npm run test",
     "start-dev": "nodemon dist/app.js",
     "start": "node dist/app.js",
     "build": "babel src -d dist",
     "build-dev": "babel src --watch -d dist"
-=======
-    "test": "mocha tests --exit",
-    "test-with-coverage": "nyc --reporter mocha-lcov-reporter npm run test",
-    "start": "node src/app.js"
->>>>>>> fd665809b5f19e79f35ecb2e9ace26c64be94a49
   },
   "repository": {
     "type": "git",
