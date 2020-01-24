@@ -4,12 +4,18 @@
   "description": "REST API for announceIT UI",
   "main": "src/app.js",
   "scripts": {
+<<<<<<< HEAD
     "test": "npm run build && mocha dist/tests --exit",
     "test-with-coverage": "nyc --reporter=text npm run test",
     "start-dev": "nodemon dist/app.js",
     "start": "node dist/app.js",
     "build": "babel src -d dist",
     "build-dev": "babel src --watch -d dist"
+=======
+    "test": "mocha tests --exit",
+    "test-with-coverage": "nyc --reporter mocha-lcov-reporter npm run test",
+    "start": "node src/app.js"
+>>>>>>> fd665809b5f19e79f35ecb2e9ace26c64be94a49
   },
   "repository": {
     "type": "git",
@@ -37,16 +43,26 @@
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
+<<<<<<< HEAD
     "@babel/cli": "^7.8.3",
     "@babel/core": "^7.8.3",
     "@babel/node": "^7.8.3",
     "@babel/preset-env": "^7.8.3",
     "@babel/preset-es2015": "^7.0.0-beta.53",
     "@babel/register": "^7.8.3",
+=======
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+>>>>>>> fd665809b5f19e79f35ecb2e9ace26c64be94a49
     "coveralls": "^3.0.9",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.20.0",
+<<<<<<< HEAD
+=======
+    "mocha": "^7.0.0",
+    "mocha-lcov-reporter": "^1.3.0",
+>>>>>>> fd665809b5f19e79f35ecb2e9ace26c64be94a49
     "nodemon": "^2.0.2",
     "nyc": "^15.0.0"
   }
