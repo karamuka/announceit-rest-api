@@ -1,5 +1,9 @@
-const AuthController = require('./auth');
+import AnouncementController from './announcement';
+import AuthController from './auth';
+import UserController from './user';
 
-module.exports = {
+export {
   AuthController,
+  AnouncementController,
+  UserController,
 };

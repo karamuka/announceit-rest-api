@@ -1,6 +1,6 @@
-const { UserModel } = require('../models');
+import { UserModel } from '../models';
 
-class AuthController {
+export default class AuthController {
   static signUp(req, res) {
     UserModel.signUp(req.body)
       .then((newUser) => {
@@ -36,10 +36,8 @@ class AuthController {
         res.status(err.status || 500)
           .json({
             status: 'error',
-            error: err.message || err,
+            error: err.message,
           });
       });
   }
 }
-
-module.exports = AuthController;

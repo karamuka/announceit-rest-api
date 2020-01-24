@@ -1,7 +1,6 @@
-const express = require('express');
-const { json, urlencoded } = require('body-parser');
-const dotenv = require('dotenv');
-const { Auth } = require('./routes');
+import express from 'express';
+import dotenv from 'dotenv';
+import { Auth, Announcements } from './routes';
 
 dotenv.config();
 
@@ -23,10 +22,10 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.use(json());
-app.use(urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use('/api/v1/auth', Auth);
+app.use('/api/v1/announcements', Announcements);
 
 // handle 404
 app.use((req, res, next) => {
@@ -46,4 +45,4 @@ app.use((customError, req, res) => {
 
 app.listen(PORT, HOST);
 
-module.exports = app;
+export default app;

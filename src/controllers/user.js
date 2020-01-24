@@ -1,16 +1,25 @@
-const { UserModel } = require('../models');
+import { UserModel } from '../models';
 
-class UserController {
-  static getOne(req, res, next) {
-    UserModel.getOne(req.params)
-      .then((user) => {
+export default class UserController {
+  static getAdveriser(req, res, next) {
+    UserModel.getAdveriser(req.params.id)
+      .then((advertiser) => {
         res.status(200)
           .json({
             status: 'success',
-            data: user,
+            data: advertiser,
+          });
+      }).catch(next);
+  }
+
+  static getAdverisers(req, res, next) {
+    UserModel.getAdverisers(req.query)
+      .then((advertisers) => {
+        res.status(200)
+          .json({
+            status: 'success',
+            data: advertisers,
           });
       }).catch(next);
   }
 }
-
-module.exports = UserController;

@@ -1,5 +1,9 @@
-const Auth = require('./auth');
+import Auth from './auth';
+import Users from './users';
+import Announcements from './announcements';
 
-module.exports = {
+export {
   Auth,
+  Users,
+  Announcements,
 };

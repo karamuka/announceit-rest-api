@@ -1,5 +1,7 @@
-const UserModel = require('./user');
+import UserModel from './user';
+import AnnouncementModel from './announcement';
 
-module.exports = {
+export {
   UserModel,
+  AnnouncementModel,
 };
