@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.use('/api/v1/auth', Auth);
-app.use('/api/v1/announcements', Announcements);
+app.use('/api/v1/announcement', Announcements);
 
 // handle 404
 app.use((req, res, next) => {
@@ -39,10 +39,13 @@ app.use((customError, req, res) => {
   res.status(customError.status || 500)
     .json({
       status: 'error',
-      error: customError.message,
+      error: customError,
     });
 });
 
-app.listen(PORT, HOST);
+app.listen(PORT, HOST, () => {
+  // eslint-disable-next-line no-console
+  console.log(`ANNOUNCEIT API LISTENING ON http://${HOST}:${PORT}`);
+});
 
 export default app;

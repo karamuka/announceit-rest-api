@@ -22,7 +22,7 @@ export default class AuthController {
   static signIn(req, res) {
     UserModel.signIn(req.body)
       .then((authUser) => {
-        res.status(200)
+        res.status(201)
           .json({
             status: 'success',
             data: authUser,
