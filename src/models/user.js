@@ -9,7 +9,7 @@ const userSchema = Joi.object({
   password: Joi.string().required().min(8).max(30),
   phoneNumber: Joi.string().required().min(10).max(13),
   address: Joi.string().required(),
-  is_admin: Joi.boolean().required(),
+  isAdmin: Joi.boolean().default(false),
 });
 
 const users = [];
@@ -19,24 +19,20 @@ export default class User {
     return new Promise((resolve, reject) => {
       const { error } = userSchema
         .validate({ ...newUser, phoneNumber: String(newUser.phoneNumber) });
-
       if (error) {
         const newError = new Error(error.message);
         newError.status = 422;
-
         reject(newError);
       } else {
         const userExists = users.find((user) => user.email === newUser.email);
-
         if (userExists) {
           const newError = new Error('an account with that email already exists');
           newError.status = 400;
-
           reject(newError);
         } else {
           const userId = Date.now();
-
-          jwt.sign({ id: userId }, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
+          const encrPayload = Cryptr.encrypt(JSON.stringify({ id: userId, isAdmin: false }));
+          jwt.sign({ u: encrPayload }, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
             if (err) {
               reject(err);
             } else {
@@ -44,7 +40,6 @@ export default class User {
                 ...newUser,
                 password: Cryptr.encrypt(newUser.password),
                 id: userId,
-                token,
               });
 
               resolve({
@@ -66,7 +61,10 @@ export default class User {
       const encrPasswprd = Cryptr.encrypt(password);
       const authUser = users.find((user) => user.email === email && user.password === encrPasswprd);
       if (authUser) {
-        jwt.sign({ id: authUser.id }, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
+        const encrPayload = Cryptr.encrypt(
+          JSON.stringify({ id: authUser.id, isAdmin: authUser.isAdmin }),
+        );
+        jwt.sign({ u: encrPayload }, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
           if (err) {
             reject(err);
           } else {
@@ -80,7 +78,7 @@ export default class User {
           }
         });
       } else {
-        const newError = new Error('access denied');
+        const newError = new Error('invalid email or password');
         newError.status = 401;
         reject(newError);
       }
@@ -100,7 +98,11 @@ export default class User {
     });
   }
 
-  static getAdvertisers(limit, offset) {
+  static getAdvertisers({ limit = 0, offset = 10 }) {
     return users.filter((user) => !user.is_admin).slice(offset, offset + limit);
+  }
+
+  static getAllUsers() {
+    return users;
   }
 }
