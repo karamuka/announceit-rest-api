@@ -4,9 +4,10 @@
   "description": "REST API for announceIT UI",
   "main": "src/app.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha ./tests -W --require @babel/register --exit",
-    "coverage": "nyc npm run test && nyc report --reporter=mocha-lcov-reporter | coveralls",
-    "start": "nodemon --exec babel-node src/app.js"
+    "test": "./node_modules/.bin/mocha ./src/app.spec.js -W --require @babel/register --exit",
+    "coverage": "nyc npm run test && nyc report --reporter=text --exit",
+    "start-dev": "nodemon --exec babel-node src/app.js",
+    "start": "babel-node src/app.js"
   },
   "repository": {
     "type": "git",
