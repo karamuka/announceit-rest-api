@@ -13,9 +13,7 @@ const testAdvertiser = {
   password: 'strongandlong',
   phoneNumber: '250788888888',
   address: 'KG St. 45 AVE',
-  is_admin: false,
   token: undefined,
-  id: undefined,
 };
 
 const testAnnouncement = {
@@ -79,10 +77,10 @@ describe('User', () => {
     it('should update an announcement', (done) => {
       request(app)
         .patch(`/api/v1/announcement/${testAnnouncement.id}`)
+        .set('Authorization', testAdvertiser.token)
         .send({
           text: 'new updated text',
         })
-        .set('Authorization', testAdvertiser.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {
