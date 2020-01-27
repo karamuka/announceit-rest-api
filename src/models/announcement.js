@@ -18,11 +18,11 @@ const announcementschema = Joi.object({
 const announcements = [];
 
 export default class AnouncementController {
-  static getAll(currentUser, { limit = 0, offset = 10 }) {
+  static getAll(currentUser, { state = null }) {
     return new Promise((resolve) => {
       const data = announcements
-        .filter((ancmt) => ancmt.owner === currentUser.id || currentUser.isAdmin)
-        .slice(offset, offset + limit);
+        .filter((ancmt) => ((ancmt.owner === currentUser.id || currentUser.isAdmin)
+        && state ? ancmt.state === state : true));
       resolve(data);
     });
   }
