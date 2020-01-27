@@ -26,8 +26,6 @@ export default class AnouncementController {
   static create(req, res, next) {
     AnnouncementModel.create(req.currentUser, req.body)
       .then((announcement) => {
-        console.log(announcement);
-
         res.status(201)
           .json({
             status: 'success',

@@ -19,6 +19,7 @@ const testAdvertiser = {
 const testAnnouncement = {
   id: undefined,
   owner: undefined,
+  title: 'my custom title',
   text: 'my custom text',
   startDate: '2019-01-01',
   endDate: '2020-01-01',
@@ -60,7 +61,7 @@ describe('User', () => {
   });
 
   describe('Announcements', () => {
-    it('should create a new announcemen', (done) => {
+    it('should create a new announcement', (done) => {
       request(app)
         .post('/api/v1/announcement')
         .send(testAnnouncement)
@@ -81,6 +82,18 @@ describe('User', () => {
         .send({
           text: 'new updated text',
         })
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          if (err) {
+            return done(err);
+          }
+          return done();
+        });
+    });
+    it('should get all announcements', (done) => {
+      request(app)
+        .get('/api/v1/announcement')
+        .set('Authorization', testAdvertiser.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {

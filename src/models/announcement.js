@@ -59,7 +59,6 @@ export default class AnouncementController {
         const announcement = { ...newAnouncement, id: newAnouncementId, owner: currentUser.id };
         announcements.push(announcement);
         resolve(announcement);
-        console.log(announcements);
       }
     });
   }
