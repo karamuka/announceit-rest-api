@@ -22,6 +22,7 @@ app.use((req, res, next) => {
   return next();
 });
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/api/v1/auth', Auth);
@@ -30,18 +31,20 @@ app.use('/api/v1/announcement', Announcements);
 
 // handle 404
 app.use((req, res, next) => {
-  const notFoundError = new Error(`${req.url} not found`);
-  notFoundError.status = 404;
-  next(notFoundError);
+  next({
+    status: 404,
+    message: `${req.url} not found`,
+  });
 });
 
 // Handle all errors thrown in the app
-app.use((customError, req, res) => {
-  res.status(customError.status || 500)
+app.use(({ status, message }, req, res, next) => {
+  res.status(status || 500)
     .json({
       status: 'error',
-      error: customError,
+      error: message,
     });
+  next();
 });
 
 app.listen(PORT, HOST, () => {

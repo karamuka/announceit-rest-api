@@ -7,6 +7,8 @@ const announcementschema = Joi.object({
     .default('pending'),
   text: Joi.string()
     .required(),
+  title: Joi.string()
+    .required(),
   startDate: Joi.date()
     .required(),
   endDate: Joi.date()
@@ -47,15 +49,17 @@ export default class AnouncementController {
 
   static create(currentUser, newAnouncement) {
     return new Promise((resolve, reject) => {
-      const { error } = announcementschema.validate(newAnouncement);
+      const { error } = announcementschema.validate({ ...newAnouncement, owner: currentUser.id });
       if (error) {
         const newError = new Error(error.message);
         newError.status = 422;
         reject(newError);
       } else {
         const newAnouncementId = Date.now();
-        announcements.push({ ...newAnouncement, owner: currentUser.id, id: newAnouncementId });
-        resolve({ id: newAnouncementId, ...newAnouncement });
+        const announcement = { ...newAnouncement, id: newAnouncementId, owner: currentUser.id };
+        announcements.push(announcement);
+        resolve(announcement);
+        console.log(announcements);
       }
     });
   }

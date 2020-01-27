@@ -3,11 +3,11 @@ import { AnnouncementModel } from '../models';
 export default class AnouncementController {
   static getAll(req, res, next) {
     AnnouncementModel.getAll(req.currentUser, req.body)
-      .then((announcement) => {
-        res.status(201)
+      .then((announcements) => {
+        res.status(200)
           .json({
             status: 'success',
-            data: announcement,
+            data: announcements,
           });
       }).catch(next);
   }
@@ -15,7 +15,7 @@ export default class AnouncementController {
   static getOne(req, res, next) {
     AnnouncementModel.getOne(req.currentUser, req.body)
       .then((announcement) => {
-        res.status(201)
+        res.status(200)
           .json({
             status: 'success',
             data: announcement,
@@ -26,6 +26,8 @@ export default class AnouncementController {
   static create(req, res, next) {
     AnnouncementModel.create(req.currentUser, req.body)
       .then((announcement) => {
+        console.log(announcement);
+
         res.status(201)
           .json({
             status: 'success',

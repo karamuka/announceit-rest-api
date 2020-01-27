@@ -78,7 +78,7 @@ export default class User {
           }
         });
       } else {
-        const newError = new Error('access denied');
+        const newError = new Error('invalid email or password');
         newError.status = 401;
         reject(newError);
       }
@@ -100,5 +100,9 @@ export default class User {
 
   static getAdvertisers({ limit = 0, offset = 10 }) {
     return users.filter((user) => !user.is_admin).slice(offset, offset + limit);
+  }
+
+  static getAllUsers() {
+    return users;
   }
 }
