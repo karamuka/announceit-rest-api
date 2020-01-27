@@ -14,12 +14,13 @@ const testAdvertiser = {
   phoneNumber: '250788888888',
   address: 'KG St. 45 AVE',
   is_admin: false,
+  token: undefined,
+  id: undefined,
 };
 
-let testAuthAdvertiser = {};
-
 const testAnnouncement = {
-  owner: null,
+  id: undefined,
+  owner: undefined,
   text: 'my custom text',
   startDate: '2019-01-01',
   endDate: '2020-01-01',
@@ -52,8 +53,9 @@ describe('User', () => {
           if (err) {
             return done(err);
           }
-          testAnnouncement.owner = res.body.data.id;
-          testAuthAdvertiser = res.body.data;
+          testAdvertiser.id = res.body.data.id;
+          testAdvertiser.token = res.body.data.token;
+          testAnnouncement.owner = +res.body.data.id;
           return done();
         });
     });
@@ -64,9 +66,25 @@ describe('User', () => {
       request(app)
         .post('/api/v1/announcement')
         .send(testAnnouncement)
-        .set('Authorization', testAuthAdvertiser.token)
+        .set('Authorization', testAdvertiser.token)
         .end((err, res) => {
           expect(res.status).to.equal(201);
+          if (err) {
+            return done(err);
+          }
+          testAnnouncement.id = res.body.data.id;
+          return done();
+        });
+    });
+    it('should update an announcement', (done) => {
+      request(app)
+        .patch(`/api/v1/announcement/${testAnnouncement.id}`)
+        .send({
+          text: 'new updated text',
+        })
+        .set('Authorization', testAdvertiser.token)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
           if (err) {
             return done(err);
           }
