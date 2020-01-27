@@ -2,7 +2,7 @@
 import { use, request, expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { describe, it } from 'mocha';
-import app from '../src/app';
+import app from './app';
 
 use(chaiHttp);
 
