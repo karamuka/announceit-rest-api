@@ -7,9 +7,9 @@ const anouncementSchema = Joi.object({
     .default('pending'),
   text: Joi.string()
     .required(),
-  start_date: Joi.date()
+  startDate: Joi.date()
     .required(),
-  end_date: Joi.date()
+  endDate: Joi.date()
     .required(),
 });
 

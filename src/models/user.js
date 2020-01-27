@@ -4,8 +4,8 @@ import Cryptr from '../util/cryptr';
 
 const userSchema = Joi.object({
   email: Joi.string().required().email(),
-  first_name: Joi.string().required(),
-  last_name: Joi.string().required(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
   password: Joi.string().required().min(8).max(30),
   phoneNumber: Joi.string().required().min(10).max(13),
   address: Joi.string().required(),
@@ -49,8 +49,8 @@ export default class User {
 
               resolve({
                 id: userId,
-                first_name: newUser.first_name,
-                last_name: newUser.last_name,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
                 email: newUser.email,
                 token,
               });
@@ -74,8 +74,8 @@ export default class User {
               token,
               email,
               id: authUser.id,
-              first_name: authUser.first_name,
-              last_name: authUser.last_name,
+              firstName: authUser.firstName,
+              lastName: authUser.lastName,
             });
           }
         });
