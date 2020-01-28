@@ -3,7 +3,7 @@ import Cryptr from '../util/cryptr';
 import { UserModel } from '../models';
 
 export default class Auth {
-  static attachCredentials(req, res, next) {
+  static getCurrentUser(req, res, next) {
     const token = String(req.get('Authorization'));
     if (token) {
       try {

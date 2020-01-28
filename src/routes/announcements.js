@@ -5,9 +5,9 @@ import Auth from '../middlewares/auth';
 
 const router = Router();
 
-router.get('/', [Auth.attachCredentials], AnouncementController.getAll);
-router.get('/:id', [Auth.attachCredentials], AnouncementController.getOne);
-router.post('/', [Auth.attachCredentials], AnouncementController.create);
-router.patch('/:id', [Auth.attachCredentials], AnouncementController.update);
+router.get('/', [Auth.getCurrentUser], AnouncementController.getAll);
+router.get('/:id', [Auth.getCurrentUser], AnouncementController.getOne);
+router.post('/', [Auth.getCurrentUser], AnouncementController.create);
+router.patch('/:id', [Auth.getCurrentUser], AnouncementController.update);
 
 export default router;
