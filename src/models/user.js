@@ -3,22 +3,43 @@ import Joi from '@hapi/joi';
 import Cryptr from '../util/cryptr';
 
 const userSchema = Joi.object({
-  email: Joi.string().required().email(),
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  password: Joi.string().required().min(8).max(30),
-  phoneNumber: Joi.string().required().min(10).max(13),
-  address: Joi.string().required(),
-  isAdmin: Joi.boolean().default(false),
+  email: Joi.string()
+    .required()
+    .email(),
+  firstName: Joi.string()
+    .required()
+    .trim()
+    .regex(/^[a-zA-Z]+$/, { name: 'must contain only alphabet characters' })
+    .lowercase(),
+  lastName: Joi.string()
+    .required()
+    .trim()
+    .regex(/^[a-zA-Z]+$/, { name: 'must contain only alphabet characters' })
+    .lowercase(),
+  password: Joi.string()
+    .required()
+    .min(8)
+    .max(30),
+  phoneNumber: Joi.string()
+    .required()
+    .regex(/^\d+$/, { name: 'must be a valid phone number' })
+    .min(10)
+    .max(12),
+  address: Joi.string()
+    .required()
+    .trim()
+    .replace(/\s+/g, ' '),
+  isAdmin: Joi.boolean()
+    .default(false),
 });
 
 const users = [];
 
 export default class User {
-  static signUp(newUser) {
+  static signUp(userInfo) {
     return new Promise((resolve, reject) => {
-      const { error } = userSchema
-        .validate({ ...newUser, phoneNumber: String(newUser.phoneNumber) });
+      const { error, value: newUser } = userSchema
+        .validate({ ...userInfo, phoneNumber: String(userInfo.phoneNumber) });
       if (error) {
         const newError = new Error(error.message);
         newError.status = 422;
