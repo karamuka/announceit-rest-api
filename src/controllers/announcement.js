@@ -2,7 +2,7 @@ import { AnnouncementModel } from '../models';
 
 export default class AnouncementController {
   static getAll(req, res, next) {
-    AnnouncementModel.getAll(req.currentUser, req.query)
+    AnnouncementModel.getAll(req.currentUser, req.query.status)
       .then((announcements) => {
         res.status(200)
           .json({
@@ -13,7 +13,7 @@ export default class AnouncementController {
   }
 
   static getOne(req, res, next) {
-    AnnouncementModel.getOne(req.currentUser, req.body)
+    AnnouncementModel.getOne(req.currentUser, +req.params.id)
       .then((announcement) => {
         res.status(200)
           .json({
@@ -36,11 +36,11 @@ export default class AnouncementController {
 
   static update(req, res, next) {
     AnnouncementModel.update(req.currentUser, +req.params.id, req.body)
-      .then((announcement) => {
+      .then((message) => {
         res.status(200)
           .json({
             status: 'success',
-            data: announcement,
+            message,
           });
       }).catch(next);
   }

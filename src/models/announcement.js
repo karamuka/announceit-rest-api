@@ -1,91 +1,113 @@
 import Joi from '@hapi/joi';
+import { Db } from '../util';
 
 const announcementschema = Joi.object({
+  id: Joi.number().default(() => Date.now()),
   owner: Joi.number()
     .required(),
   status: Joi.string()
     .default('pending'),
   text: Joi.string()
-    .required(),
+    .required()
+    .trim()
+    .replace(/\s+/g, ' '),
   title: Joi.string()
-    .required(),
+    .required()
+    .trim()
+    .replace(/\s+/g, ' '),
   startDate: Joi.date()
     .required(),
   endDate: Joi.date()
     .required(),
 });
 
-const announcements = [];
-
 export default class AnouncementController {
-  static getAll(currentUser, { state = null }) {
-    return new Promise((resolve) => {
-      const data = announcements
-        .filter((ancmt) => ((ancmt.owner === currentUser.id || currentUser.isAdmin)
-        && state ? ancmt.state === state : true));
-      resolve(data);
+  static getAll(currentUser, status = '') {
+    return new Promise((resolve, reject) => {
+      const query = {
+        text: 'select f_get_announcements($1,$2);',
+        params: [currentUser, status],
+      };
+      Db.query(query)
+        .then((queryRes) => {
+          const results = queryRes.rows[0].f_get_announcements || [];
+          resolve(results);
+        })
+        .catch(reject);
     });
   }
 
-  static getOne(currentUser, anouncementId) {
+  static getOne(currentUser, announcementId) {
     return new Promise((resolve, reject) => {
-      const announcement = announcements.filter((ancmt) => ancmt.id === anouncementId);
-      if (announcement) {
-        const hasAccess = announcement.owner === currentUser.id || currentUser.isAdmin;
-        if (hasAccess) {
-          resolve(announcement);
-        } else {
-          const newError = new Error('access denied to that resource');
-          newError.status = 401;
-          reject(newError);
-        }
-      } else {
-        const newError = new Error('no such announcement found');
-        newError.status = 404;
-        reject(newError);
-      }
+      const query = {
+        text: 'select f_get_announcement($1,$2);',
+        params: [currentUser, announcementId],
+      };
+      Db.query(query)
+        .then((queryRes) => {
+          const results = queryRes.rows[0].f_get_announcement;
+          if (results.status === 'success') {
+            resolve(results.data);
+          } else {
+            const newError = new Error(results.message);
+            newError.status = Number(results.status);
+            reject(newError);
+          }
+        })
+        .catch(reject);
     });
   }
 
   static create(currentUser, newAnouncement) {
     return new Promise((resolve, reject) => {
-      const { error } = announcementschema.validate({ ...newAnouncement, owner: currentUser.id });
+      const { error, value: validateOutput } = announcementschema
+        .validate({
+          ...newAnouncement,
+          owner: currentUser.id,
+        });
       if (error) {
         const newError = new Error(error.message);
         newError.status = 422;
         reject(newError);
       } else {
-        const newAnouncementId = Date.now();
-        const announcement = { ...newAnouncement, id: newAnouncementId, owner: currentUser.id };
-        announcements.push(announcement);
-        resolve(announcement);
+        const query = {
+          text: 'select f_create_announcement($1,$2);',
+          params: [currentUser, validateOutput],
+        };
+        Db.query(query)
+          .then((queryRes) => {
+            const results = queryRes.rows[0].f_create_announcement;
+            if (results.status === 'success') {
+              resolve(results);
+            } else {
+              const newError = new Error(results.message);
+              newError.status = 401;
+              reject(newError);
+            }
+          })
+          .catch(reject);
       }
     });
   }
 
-  static update(currentUser, announcementId, newAnnouncement) {
+  static update(currentUser, announcementId, announcementUpdate) {
     return new Promise((resolve, reject) => {
-      const announcementIndex = announcements.findIndex((ancmt) => ancmt.id === announcementId);
-      if (announcementIndex === -1) {
-        const newError = new Error('no such announcement found');
-        newError.status = 404;
-        reject(newError);
-      } else {
-        const hasAccess = announcements[announcementIndex].owner === currentUser.id
-         || currentUser.isAdmin;
-        if (hasAccess) {
-          const announcement = announcements[announcementIndex];
-          Object.entries(newAnnouncement).forEach(([property, value]) => {
-            announcement[property] = value;
-          });
-          announcements[announcementIndex] = announcement;
-          resolve(announcement);
-        } else {
-          const newError = new Error('access denied to that resource');
-          newError.status = 401;
-          reject(newError);
-        }
-      }
+      const query = {
+        text: 'select f_update_announcement($1,$2,$3);',
+        params: [currentUser, announcementId, announcementUpdate],
+      };
+      Db.query(query)
+        .then((queryRes) => {
+          const results = queryRes.rows[0].f_update_announcement;
+          if (results.status === 'success') {
+            resolve(results.message);
+          } else {
+            const newError = new Error(results.message);
+            newError.status = Number(results.status);
+            reject(newError);
+          }
+        })
+        .catch(reject);
     });
   }
 }
