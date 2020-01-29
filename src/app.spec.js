@@ -2,15 +2,18 @@
 import { use, request, expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { describe, it } from 'mocha';
-import { config } from 'dotenv';
+import dotenv from 'dotenv';
 import app from './app';
 
-config();
+dotenv.config();
+
 use(chaiHttp);
 
 const {
-  TEST_EMAIL, TEST_PASSWORD, TEST_TOKEN, TEST_ANNOUNCEMENT_ID,
+  TEST_EMAIL, TEST_PASSWORD, TEST_ANNOUNCEMENT_ID,
 } = process.env;
+
+const TEST_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoiZGE1MTA1YzI3YjQ4MTk2ZjJhOWU2ZGE3MTRmZmIzODEzYzYxZmE4MDUwMGJjZTI4ZmUwOWQ2OTZhNWYyNDNmMmJmNWMzNzRhMTNmMGYxMWNhOThiYWVhYWRiODQ4MGRhIiwiaWF0IjoxNTgwMzIzMTIyLCJleHAiOjE1ODA5Mjc5MjJ9._rY2_iUdroE2ZNPz7pB265qIMZkf3BFEWUeoV6HlqkA';
 
 const testCredentials = {
   email: TEST_EMAIL,
@@ -99,7 +102,7 @@ describe('User', () => {
           startDate: '2019-01-01',
           endDate: '2020-01-01',
         })
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(201);
           if (err) {
@@ -117,7 +120,7 @@ describe('User', () => {
           startDate: '2019-01-01-01',
           endDate: '2020-01-01',
         })
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(422);
           if (err) {
@@ -129,7 +132,7 @@ describe('User', () => {
     it('should update a specific announcement', (done) => {
       request(app)
         .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .send({
           text: 'new updated text from test',
         })
@@ -144,7 +147,7 @@ describe('User', () => {
     it('advertiser should not update announcement status', (done) => {
       request(app)
         .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .send({
           status: 'active',
         })
@@ -174,7 +177,7 @@ describe('User', () => {
     it('should view all his/her announcements', (done) => {
       request(app)
         .get('/api/v1/announcement')
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {
@@ -186,7 +189,7 @@ describe('User', () => {
     it('should not view announcements with invalid auth token', (done) => {
       request(app)
         .get('/api/v1/announcement')
-        .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
+        .set('Authorization', 'INVALID=ii_0bisvonlsfkvsvlmsfvh')
         .end((err, res) => {
           expect(res.status).to.equal(401);
           if (err) {
@@ -198,7 +201,7 @@ describe('User', () => {
     it('should view announcements by status', (done) => {
       request(app)
         .get('/api/v1/announcement/?status=pending')
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {
@@ -210,7 +213,7 @@ describe('User', () => {
     it('should view a specific announcement', (done) => {
       request(app)
         .get(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {
@@ -222,7 +225,7 @@ describe('User', () => {
     it('should not view an announcement with invalid id', (done) => {
       request(app)
         .get('/api/v1/announcement/1545')
-        .set('Authorization', testCredentials.token)
+        .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(404);
           if (err) {
@@ -234,7 +237,7 @@ describe('User', () => {
     it('should not view an announcement with invalid auth token', (done) => {
       request(app)
         .get(`/api/v1/announcement/${TEST_ANNOUNCEMENT_ID}`)
-        .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
+        .set('Authorization', 'INVALID=ll_0bisvonlsfkvsvlmsfvh')
         .end((err, res) => {
           expect(res.status).to.equal(401);
           if (err) {
