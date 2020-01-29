@@ -19,6 +19,35 @@ const testCredentials = {
   token: TEST_TOKEN,
 };
 
+describe('Ganeral', () => {
+  describe('CORS', () => {
+    it('it should respond with available http verbs', (done) => {
+      request(app)
+        .options('')
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          if (err) {
+            return done(err);
+          }
+          return done();
+        });
+    });
+  });
+  describe('Route availability', () => {
+    it('it should respond with 404 not found', (done) => {
+      request(app)
+        .put('')
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+          if (err) {
+            return done(err);
+          }
+          return done();
+        });
+    });
+  });
+});
+
 describe('User', () => {
   describe('Authentication', () => {
     it('should create a new user account', (done) => {
@@ -35,7 +64,6 @@ describe('User', () => {
         .end((err, res) => {
           expect(res.status).to.equal(201);
           if (err) {
-            console.log(err);
             return done(err);
           }
           return done();
@@ -55,7 +83,6 @@ describe('User', () => {
         .end((err, res) => {
           expect(res.status).to.equal(422);
           if (err) {
-            console.log(err);
             return done(err);
           }
           return done();
