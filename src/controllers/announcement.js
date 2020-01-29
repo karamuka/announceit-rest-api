@@ -13,7 +13,7 @@ export default class AnouncementController {
   }
 
   static getOne(req, res, next) {
-    AnnouncementModel.getOne(req.currentUser, req.params.id)
+    AnnouncementModel.getOne(req.currentUser, +req.params.id)
       .then((announcement) => {
         res.status(200)
           .json({

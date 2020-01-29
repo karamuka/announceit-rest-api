@@ -126,9 +126,9 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should update an announcement', (done) => {
+    it('should update a specific announcement', (done) => {
       request(app)
-        .patch(`/api/v1/announcement/${TEST_ANNOUNCEMENT_ID}`)
+        .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
         .set('Authorization', testCredentials.token)
         .send({
           text: 'new updated text from test',
@@ -141,9 +141,9 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('advertiser should not update an announcement status', (done) => {
+    it('advertiser should not update announcement status', (done) => {
       request(app)
-        .patch(`/api/v1/announcement/${TEST_ANNOUNCEMENT_ID}`)
+        .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
         .set('Authorization', testCredentials.token)
         .send({
           status: 'active',
@@ -158,7 +158,7 @@ describe('User', () => {
     }).timeout(15000);
     it('should not update an announcement with invalid auth token', (done) => {
       request(app)
-        .patch(`/api/v1/announcement/${TEST_ANNOUNCEMENT_ID}`)
+        .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
         .set('Authorization', 'vvbifbiusfvoun')
         .send({
           status: 'active',
@@ -171,7 +171,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should get all announcements', (done) => {
+    it('should view all his/her announcements', (done) => {
       request(app)
         .get('/api/v1/announcement')
         .set('Authorization', testCredentials.token)
@@ -183,7 +183,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should not get announcements with invalid auth token', (done) => {
+    it('should not view announcements with invalid auth token', (done) => {
       request(app)
         .get('/api/v1/announcement')
         .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
@@ -195,7 +195,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should get announcements by status', (done) => {
+    it('should view announcements by status', (done) => {
       request(app)
         .get('/api/v1/announcement/?status=pending')
         .set('Authorization', testCredentials.token)
@@ -207,9 +207,9 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should get one announcement', (done) => {
+    it('should view a specific announcement', (done) => {
       request(app)
-        .get(`/api/v1/announcement/${TEST_ANNOUNCEMENT_ID}`)
+        .get(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
         .set('Authorization', testCredentials.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
@@ -219,7 +219,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should not get one announcement with invalid id', (done) => {
+    it('should not view an announcement with invalid id', (done) => {
       request(app)
         .get('/api/v1/announcement/1545')
         .set('Authorization', testCredentials.token)
@@ -231,7 +231,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should not get one announcement with invalid auth token', (done) => {
+    it('should not view an announcement with invalid auth token', (done) => {
       request(app)
         .get(`/api/v1/announcement/${TEST_ANNOUNCEMENT_ID}`)
         .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
