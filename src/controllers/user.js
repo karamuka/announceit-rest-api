@@ -1,8 +1,8 @@
 import { UserModel } from '../models';
 
 export default class UserController {
-  static getAdvertiser(req, res, next) {
-    UserModel.getAdvertiser(req.params.id)
+  static getAllAdvertisers(req, res, next) {
+    UserModel.getAllAdvertisers(req.params.id)
       .then((advertiser) => {
         res.status(200)
           .json({
@@ -12,8 +12,8 @@ export default class UserController {
       }).catch(next);
   }
 
-  static getAdvertisers(req, res, next) {
-    UserModel.getAdvertisers(req.query)
+  static getOneAdvertiser(req, res, next) {
+    UserModel.getOneAdvertiser(req.query)
       .then((advertisers) => {
         res.status(200)
           .json({

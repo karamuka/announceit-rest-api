@@ -4,11 +4,7 @@ export default class AuthController {
   static signUp(req, res) {
     UserModel.signUp(req.body)
       .then((newUser) => {
-        res.status(201)
-          .json({
-            status: 'success',
-            data: newUser,
-          });
+        res.status(201).json(newUser);
       })
       .catch((err) => {
         res.status(err.status || 500)
@@ -23,10 +19,7 @@ export default class AuthController {
     UserModel.signIn(req.body)
       .then((authUser) => {
         res.status(201)
-          .json({
-            status: 'success',
-            data: authUser,
-          });
+          .json(authUser);
       })
       .catch((err) => {
         res.status(err.status || 500)

@@ -5,7 +5,7 @@ import Auth from '../middlewares/auth';
 
 const router = Router();
 
-router.get('/adveritisers', [Auth.getCurrentUser], UserController.getAdvertisers);
-router.get('/adveritisers/:id', [Auth.getCurrentUser], UserController.getAdvertiser);
+router.get('/adveritisers', [Auth.getCurrentUser], UserController.getAllAdvertisers);
+router.get('/adveritisers/:id', [Auth.getCurrentUser], UserController.getOneAdvertiser);
 
 export default router;

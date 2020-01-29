@@ -1,8 +1,13 @@
 import jwt from 'jsonwebtoken';
 import Joi from '@hapi/joi';
+
 import Cryptr from '../util/cryptr';
+import { Db } from '../util';
+
+const { TK_CYPHER } = process.env;
 
 const userSchema = Joi.object({
+  id: Joi.number().default(() => Date.now()),
   email: Joi.string()
     .required()
     .email(),
@@ -39,74 +44,83 @@ export default class User {
   static signUp(userInfo) {
     return new Promise((resolve, reject) => {
       const { error, value: newUser } = userSchema
-        .validate({ ...userInfo, phoneNumber: String(userInfo.phoneNumber) });
+        .validate({
+          ...userInfo,
+          phoneNumber: String(userInfo.phoneNumber),
+        });
       if (error) {
         const newError = new Error(error.message);
         newError.status = 422;
         reject(newError);
       } else {
-        const userExists = users.find((user) => user.email === newUser.email);
-        if (userExists) {
-          const newError = new Error('an account with that email already exists');
-          newError.status = 400;
-          reject(newError);
-        } else {
-          const userId = Date.now();
-          const encrPayload = Cryptr.encrypt(JSON.stringify({ id: userId, isAdmin: false }));
-          jwt.sign({ u: encrPayload }, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
-            if (err) {
-              reject(err);
+        const query = {
+          text: 'select f_signup($1);',
+          params: [newUser],
+        };
+        Db.query(query)
+          .then((queryRes) => {
+            const results = queryRes.rows[0].f_signup;
+            if (results.status === 'success') {
+              const encrPayload = Cryptr.encrypt(
+                JSON.stringify({
+                  id: results.data.id,
+                  isAdmin: results.data.isAdmin,
+                }),
+              );
+              jwt.sign({ u: encrPayload }, TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  results.data.token = token;
+                  resolve(results);
+                }
+              });
             } else {
-              users.push({
-                ...newUser,
-                password: Cryptr.encrypt(newUser.password),
-                id: userId,
-              });
-
-              resolve({
-                id: userId,
-                firstName: newUser.firstName,
-                lastName: newUser.lastName,
-                email: newUser.email,
-                token,
-              });
+              const newError = new Error(results.message);
+              newError.status = 422;
+              reject(newError);
             }
-          });
-        }
+          })
+          .catch(reject);
       }
     });
   }
 
-  static signIn({ email, password }) {
+  static signIn(userCredentials) {
     return new Promise((resolve, reject) => {
-      const encrPasswprd = Cryptr.encrypt(password);
-      const authUser = users.find((user) => user.email === email && user.password === encrPasswprd);
-      if (authUser) {
-        const encrPayload = Cryptr.encrypt(
-          JSON.stringify({ id: authUser.id, isAdmin: authUser.isAdmin }),
-        );
-        jwt.sign({ u: encrPayload }, process.env.TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({
-              token,
-              email,
-              id: authUser.id,
-              firstName: authUser.firstName,
-              lastName: authUser.lastName,
+      const query = {
+        text: 'select f_signin($1);',
+        params: [userCredentials],
+      };
+      Db.query(query)
+        .then((queryRes) => {
+          const results = queryRes.rows[0].f_signin;
+          if (results.status === 'success') {
+            const encrPayload = Cryptr.encrypt(
+              JSON.stringify({
+                id: results.data.id,
+                isAdmin: results.data.isAdmin,
+              }),
+            );
+            jwt.sign({ u: encrPayload }, TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
+              if (err) {
+                reject(err);
+              } else {
+                results.data.token = token;
+                resolve(results);
+              }
             });
+          } else {
+            const newError = new Error(results.message);
+            newError.status = 401;
+            reject(newError);
           }
-        });
-      } else {
-        const newError = new Error('invalid email or password');
-        newError.status = 401;
-        reject(newError);
-      }
+        })
+        .catch(reject);
     });
   }
 
-  static getAdvertiser(id) {
+  static getOneAdvertiser(id) {
     return new Promise((resolve, reject) => {
       const advertiser = users.find((user) => !user.is_admin && user.id === id);
       if (advertiser) {
@@ -119,11 +133,7 @@ export default class User {
     });
   }
 
-  static getAdvertisers({ limit = 0, offset = 10 }) {
+  static getAllAdvertisers({ limit = 0, offset = 10 }) {
     return users.filter((user) => !user.is_admin).slice(offset, offset + limit);
-  }
-
-  static getAllUsers() {
-    return users;
   }
 }
