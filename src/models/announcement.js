@@ -22,11 +22,11 @@ const announcementschema = Joi.object({
 });
 
 export default class AnouncementController {
-  static getAll(currentUser) {
+  static getAll(currentUser, status = '') {
     return new Promise((resolve, reject) => {
       const query = {
-        text: 'select f_get_announcements($1);',
-        params: [currentUser],
+        text: 'select f_get_announcements($1,$2);',
+        params: [currentUser, status],
       };
       Db.query(query)
         .then((queryRes) => {

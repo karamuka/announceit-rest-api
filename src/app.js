@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { Auth, Announcements, Users } from './routes';
+import { Auth, Announcements } from './routes';
 
 dotenv.config();
 
@@ -26,7 +26,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/api/v1/auth', Auth);
-app.use('/api/v1/users', Users);
 app.use('/api/v1/announcement', Announcements);
 
 // handle 404

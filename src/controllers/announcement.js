@@ -2,7 +2,7 @@ import { AnnouncementModel } from '../models';
 
 export default class AnouncementController {
   static getAll(req, res, next) {
-    AnnouncementModel.getAll(req.currentUser)
+    AnnouncementModel.getAll(req.currentUser, req.query.status)
       .then((announcements) => {
         res.status(200)
           .json({

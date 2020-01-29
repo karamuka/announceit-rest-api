@@ -38,8 +38,6 @@ const userSchema = Joi.object({
     .default(false),
 });
 
-const users = [];
-
 export default class User {
   static signUp(userInfo) {
     return new Promise((resolve, reject) => {
@@ -118,22 +116,5 @@ export default class User {
         })
         .catch(reject);
     });
-  }
-
-  static getOneAdvertiser(id) {
-    return new Promise((resolve, reject) => {
-      const advertiser = users.find((user) => !user.is_admin && user.id === id);
-      if (advertiser) {
-        resolve(advertiser);
-      } else {
-        const newError = new Error('user not found');
-        newError.string = 404;
-        reject(newError);
-      }
-    });
-  }
-
-  static getAllAdvertisers({ limit = 0, offset = 10 }) {
-    return users.filter((user) => !user.is_admin).slice(offset, offset + limit);
   }
 }
