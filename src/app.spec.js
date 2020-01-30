@@ -116,6 +116,27 @@ describe('User', () => {
     }).timeout(15000);
   });
 
+  describe('Advertisers', () => {
+    it('admin should view all users', (done) => {
+      request(app)
+        .get('/api/v1/user')
+        .set('Authorization', TEST_TOKEN)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          return done();
+        });
+    }).timeout(15000);
+    it('advertiser should not view all users', (done) => {
+      request(app)
+        .get('/api/v1/user')
+        .set('Authorization', createdData.user.token)
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          return done();
+        });
+    }).timeout(15000);
+  });
+
   describe('Announcements', () => {
     it('advertiser should create a new announcement', (done) => {
       request(app)
