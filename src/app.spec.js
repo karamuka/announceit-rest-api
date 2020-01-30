@@ -67,6 +67,17 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
+    it('should not create an already existing account', (done) => {
+      request(app)
+        .post('/api/v1/auth/signup')
+        .send(createdData.user)
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          createdData.user.id = res.body.data.id;
+          createdData.user.token = res.body.data.token;
+          return done();
+        });
+    }).timeout(15000);
     it('should not create a user with invalid input', (done) => {
       request(app)
         .post('/api/v1/auth/signup')
@@ -92,8 +103,8 @@ describe('User', () => {
       request(app)
         .post('/api/v1/auth/signin')
         .send({
-          email: 'invalid@email',
-          password: 'inva@pass',
+          email: createdData.user.email,
+          password: `${createdData.user.password}15`,
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
