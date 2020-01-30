@@ -77,13 +77,7 @@ export default class AnouncementController {
         Db.query(query)
           .then((queryRes) => {
             const results = queryRes.rows[0].f_create_announcement;
-            if (results.status === 'success') {
-              resolve(results.data);
-            } else {
-              const newError = new Error(results.message);
-              newError.status = 401;
-              reject(newError);
-            }
+            resolve(results.data);
           })
           .catch(reject);
       }
