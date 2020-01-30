@@ -25,8 +25,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/api/v1/auth', Auth);
-app.use('/api/v1/announcement', Announcements);
-app.use('/api/v1/user', User);
+app.use('/api/v1/announcements', Announcements);
+app.use('/api/v1/users', User);
 
 // handle 404
 app.use((req, res, next) => {
