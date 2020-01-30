@@ -22,12 +22,12 @@ const createdData = {
   user: {
     id: undefined,
     token: undefined,
-    email: `${Date.now()}@announceit.com`,
-    password: 'testit@announceit',
+    email: 'mockuser@announceit.com',
+    password: 'mockuser@announceit',
     firstName: 'john',
     lastName: 'doe',
     phoneNumber: 250722449977,
-    address: 'Test address',
+    address: 'Moch user address',
   },
 };
 
@@ -40,7 +40,7 @@ describe('Ganeral', () => {
           expect(res.status).to.equal(200);
           return done();
         });
-    });
+    }).timeout(30000);
   });
   describe('Endpoints availability', () => {
     it('should respond with 404 not found', (done) => {
@@ -50,7 +50,7 @@ describe('Ganeral', () => {
           expect(res.status).to.equal(404);
           return done();
         });
-    });
+    }).timeout(30000);
   });
 });
 
@@ -81,7 +81,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('should not create a with invalid input', (done) => {
+    it('should not create a user with invalid input', (done) => {
       request(app)
         .post('/api/v1/auth/signup')
         .send({ email: 'invalid@email' })
@@ -90,7 +90,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('should authenticate a with valid credentials', (done) => {
+    it('should authenticate a user with valid credentials', (done) => {
       request(app)
         .post('/api/v1/auth/signin')
         .send({
@@ -102,7 +102,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('should not authenticate a with invalid credentials', (done) => {
+    it('should not authenticate a user with invalid credentials', (done) => {
       request(app)
         .post('/api/v1/auth/signin')
         .send({
@@ -116,7 +116,7 @@ describe('User', () => {
     }).timeout(30000);
   });
 
-  describe('Advertisers', () => {
+  describe('User info access', () => {
     it('should view all users', (done) => {
       request(app)
         .get('/api/v1/users')
@@ -132,6 +132,33 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(401);
+          return done();
+        });
+    }).timeout(30000);
+    it('should view a specific user', (done) => {
+      request(app)
+        .get(`/api/v1/users/${createdData.user.id}`)
+        .set('Authorization', TEST_TOKEN)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          return done();
+        });
+    }).timeout(30000);
+    it('should not view a specific user', (done) => {
+      request(app)
+        .get(`/api/v1/users/${createdData.user.id}`)
+        .set('Authorization', createdData.user.token)
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          return done();
+        });
+    }).timeout(30000);
+    it('should return user not found', (done) => {
+      request(app)
+        .get('/api/v1/users/15')
+        .set('Authorization', TEST_TOKEN)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
           return done();
         });
     }).timeout(30000);
