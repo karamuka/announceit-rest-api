@@ -22,7 +22,7 @@ const createdData = {
   user: {
     id: undefined,
     token: undefined,
-    email: `${Date.now()}test@announceit.com`,
+    email: `${Date.now()}@announceit.com`,
     password: 'testit@announceit',
     firstName: 'john',
     lastName: 'doe',
@@ -63,6 +63,7 @@ describe('User', () => {
         .end((err, res) => {
           expect(res.status).to.equal(201);
           createdData.user.id = res.body.data.id;
+          createdData.user.email = res.body.data.email;
           createdData.user.token = res.body.data.token;
           return done();
         });
@@ -70,11 +71,13 @@ describe('User', () => {
     it('should not create an already existing account', (done) => {
       request(app)
         .post('/api/v1/auth/signup')
-        .send(createdData.user)
+        .send({
+          ...createdData.user,
+          id: undefined,
+          token: undefined,
+        })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
-          createdData.user.id = res.body.data.id;
-          createdData.user.token = res.body.data.token;
+          expect(res.status).to.equal(400);
           return done();
         });
     }).timeout(15000);
