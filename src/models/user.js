@@ -66,12 +66,8 @@ export default class User {
                 }),
               );
               jwt.sign({ u: encrPayload }, TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  results.data.token = token;
-                  resolve(results);
-                }
+                results.data.token = token;
+                resolve(results);
               });
             } else {
               const newError = new Error(results.message);
@@ -101,12 +97,8 @@ export default class User {
               }),
             );
             jwt.sign({ u: encrPayload }, TK_CYPHER, { expiresIn: '1 day' }, (err, token) => {
-              if (err) {
-                reject(err);
-              } else {
-                results.data.token = token;
-                resolve(results);
-              }
+              results.data.token = token;
+              resolve(results);
             });
           } else {
             const newError = new Error(results.message);
