@@ -9,5 +9,6 @@ router.get('/', [Auth.getCurrentUser], AnouncementController.getAll);
 router.get('/:id', [Auth.getCurrentUser], AnouncementController.getOne);
 router.post('/', [Auth.getCurrentUser], AnouncementController.create);
 router.patch('/:id', [Auth.getCurrentUser], AnouncementController.update);
+router.delete('/:id', [Auth.getCurrentUser], AnouncementController.delete);
 
 export default router;

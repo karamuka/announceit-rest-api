@@ -44,4 +44,15 @@ export default class AnouncementController {
           });
       }).catch(next);
   }
+
+  static delete(req, res, next) {
+    AnnouncementModel.delete(req.currentUser, +req.params.id)
+      .then((message) => {
+        res.status(200)
+          .json({
+            status: 'success',
+            message,
+          });
+      }).catch(next);
+  }
 }

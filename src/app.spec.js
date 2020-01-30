@@ -9,18 +9,30 @@ dotenv.config();
 
 use(chaiHttp);
 
-const {
-  TEST_EMAIL, TEST_PASSWORD, TEST_TOKEN, TEST_ANNOUNCEMENT_ID,
-} = process.env;
+const { TEST_TOKEN } = process.env;
 
-const testCredentials = {
-  email: TEST_EMAIL,
-  password: TEST_PASSWORD,
-  token: TEST_TOKEN,
+const createdData = {
+  announcement: {
+    id: undefined,
+    title: 'test announcement title',
+    text: 'test announcement text',
+    startDate: '2019-01-01',
+    endDate: '2020-01-01',
+  },
+  user: {
+    id: undefined,
+    token: undefined,
+    email: `${Date.now()}test@announceit.com`,
+    password: 'testit@announceit',
+    firstName: 'john',
+    lastName: 'doe',
+    phoneNumber: 250722449977,
+    address: 'Test address',
+  },
 };
 
 describe('Ganeral', () => {
-  describe('CORS', () => {
+  describe('Check CORS', () => {
     it('it should respond with available http verbs', (done) => {
       request(app)
         .options('')
@@ -33,7 +45,7 @@ describe('Ganeral', () => {
         });
     });
   });
-  describe('Route availability', () => {
+  describe('Check routes availability', () => {
     it('it should respond with 404 not found', (done) => {
       request(app)
         .put('')
@@ -53,33 +65,21 @@ describe('User', () => {
     it('should create a new user account', (done) => {
       request(app)
         .post('/api/v1/auth/signup')
-        .send({
-          email: `${Date.now()}test@announceit.com`,
-          password: 'test@announceit',
-          firstName: 'john',
-          lastName: 'doe',
-          phoneNumber: 250722111111,
-          address: 'Test address',
-        })
+        .send(createdData.user)
         .end((err, res) => {
           expect(res.status).to.equal(201);
           if (err) {
             return done(err);
           }
+          createdData.user.id = res.body.data.id;
+          createdData.user.token = res.body.data.token;
           return done();
         });
     }).timeout(15000);
     it('should not create a user with invalid input', (done) => {
       request(app)
         .post('/api/v1/auth/signup')
-        .send({
-          email: `${Date.now()}test@announceit`,
-          password: 'test',
-          firstName: 'john',
-          lastName: 'doe',
-          phoneNumber: 2507221,
-          address: 'Test address',
-        })
+        .send({ email: 'invalid@email' })
         .end((err, res) => {
           expect(res.status).to.equal(422);
           if (err) {
@@ -91,7 +91,10 @@ describe('User', () => {
     it('should authenticate a user with valid credentials', (done) => {
       request(app)
         .post('/api/v1/auth/signin')
-        .send(testCredentials)
+        .send({
+          email: createdData.user.email,
+          password: createdData.user.password,
+        })
         .end((err, res) => {
           expect(res.status).to.equal(201);
           if (err) {
@@ -104,8 +107,8 @@ describe('User', () => {
       request(app)
         .post('/api/v1/auth/signin')
         .send({
-          email: 'invalid@announceit',
-          password: 'invalidpass',
+          email: 'invalid@email',
+          password: 'inva@pass',
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
@@ -118,34 +121,25 @@ describe('User', () => {
   });
 
   describe('Announcements', () => {
-    it('should create a new announcement', (done) => {
+    it('advertiser should create a new announcement', (done) => {
       request(app)
         .post('/api/v1/announcement')
-        .send({
-          title: 'my custom test announcement title',
-          text: 'my custom test announcement text',
-          startDate: '2019-01-01',
-          endDate: '2020-01-01',
-        })
-        .set('Authorization', TEST_TOKEN)
+        .send(createdData.announcement)
+        .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(201);
           if (err) {
             return done(err);
           }
+          createdData.announcement.id = res.body.data.id;
           return done();
         });
     }).timeout(15000);
-    it('should not create an announcement with invalid input', (done) => {
+    it('advertiser should not create an announcement with invalid input', (done) => {
       request(app)
         .post('/api/v1/announcement')
-        .send({
-          title: '',
-          text: 'my custom test announcement text',
-          startDate: '2019-01-01-01',
-          endDate: '2020-01-01',
-        })
-        .set('Authorization', TEST_TOKEN)
+        .send({ title: '' })
+        .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(422);
           if (err) {
@@ -154,10 +148,10 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should update a specific announcement', (done) => {
+    it('advertiser should update a specific announcement', (done) => {
       request(app)
-        .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
-        .set('Authorization', TEST_TOKEN)
+        .patch(`/api/v1/announcement/${+createdData.announcement.id}`)
+        .set('Authorization', createdData.user.token)
         .send({
           text: 'new updated text from test',
         })
@@ -169,10 +163,25 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
+    it('admin should update announcement status', (done) => {
+      request(app)
+        .patch(`/api/v1/announcement/${+createdData.announcement.id}`)
+        .set('Authorization', TEST_TOKEN)
+        .send({
+          status: 'active',
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          if (err) {
+            return done(err);
+          }
+          return done();
+        });
+    }).timeout(15000);
     it('advertiser should not update announcement status', (done) => {
       request(app)
-        .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
-        .set('Authorization', TEST_TOKEN)
+        .patch(`/api/v1/announcement/${+createdData.announcement.id}`)
+        .set('Authorization', createdData.user.token)
         .send({
           status: 'active',
         })
@@ -184,9 +193,9 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should not update an announcement with invalid auth token', (done) => {
+    it('user should not update an announcement with invalid auth token', (done) => {
       request(app)
-        .patch(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
+        .patch(`/api/v1/announcement/${+createdData.announcement.id}`)
         .set('Authorization', 'vvbifbiusfvoun')
         .send({
           status: 'active',
@@ -199,10 +208,10 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should view all his/her announcements', (done) => {
+    it('advertiser should view all his/her announcements', (done) => {
       request(app)
         .get('/api/v1/announcement')
-        .set('Authorization', TEST_TOKEN)
+        .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {
@@ -211,7 +220,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should not view announcements with invalid auth token', (done) => {
+    it('user should not view announcements with invalid auth token', (done) => {
       request(app)
         .get('/api/v1/announcement')
         .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
@@ -223,10 +232,10 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should view announcements by status', (done) => {
+    it('user should view announcements by status', (done) => {
       request(app)
         .get('/api/v1/announcement/?status=pending')
-        .set('Authorization', TEST_TOKEN)
+        .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {
@@ -235,10 +244,10 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should view a specific announcement', (done) => {
+    it('user should view a specific announcement', (done) => {
       request(app)
-        .get(`/api/v1/announcement/${+TEST_ANNOUNCEMENT_ID}`)
-        .set('Authorization', TEST_TOKEN)
+        .get(`/api/v1/announcement/${+createdData.announcement.id}`)
+        .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
           if (err) {
@@ -247,10 +256,10 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should not view an announcement with invalid id', (done) => {
+    it('user should not view an announcement with invalid id', (done) => {
       request(app)
         .get('/api/v1/announcement/1545')
-        .set('Authorization', TEST_TOKEN)
+        .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(404);
           if (err) {
@@ -259,12 +268,36 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('should not view an announcement with invalid auth token', (done) => {
+    it('user should not view an announcement with invalid auth token', (done) => {
       request(app)
-        .get(`/api/v1/announcement/${TEST_ANNOUNCEMENT_ID}`)
+        .get(`/api/v1/announcement/${+createdData.announcement.id}`)
         .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
         .end((err, res) => {
           expect(res.status).to.equal(401);
+          if (err) {
+            return done(err);
+          }
+          return done();
+        });
+    }).timeout(15000);
+    it('advertiser should not delete announcement', (done) => {
+      request(app)
+        .delete(`/api/v1/announcement/${+createdData.announcement.id}`)
+        .set('Authorization', createdData.user.token)
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          if (err) {
+            return done(err);
+          }
+          return done();
+        });
+    }).timeout(15000);
+    it('admin should delete announcement', (done) => {
+      request(app)
+        .delete(`/api/v1/announcement/${+createdData.announcement.id}`)
+        .set('Authorization', TEST_TOKEN)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
           if (err) {
             return done(err);
           }
