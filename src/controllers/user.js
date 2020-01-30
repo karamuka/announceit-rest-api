@@ -12,6 +12,17 @@ export default class AnouncementController {
       }).catch(next);
   }
 
+  static getOne(req, res, next) {
+    UserModel.getOne(req.currentUser, +req.params.id)
+      .then((user) => {
+        res.status(200)
+          .json({
+            status: 'success',
+            data: user,
+          });
+      }).catch(next);
+  }
+
   static delete(req, res, next) {
     UserModel.delete(req.currentUser, req.params.id)
       .then((message) => {
