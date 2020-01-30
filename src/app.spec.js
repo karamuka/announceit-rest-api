@@ -126,7 +126,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('advertiser should not view all users', (done) => {
+    it('should not view all users', (done) => {
       request(app)
         .get('/api/v1/user')
         .set('Authorization', createdData.user.token)
@@ -138,7 +138,7 @@ describe('User', () => {
   });
 
   describe('Announcements', () => {
-    it('advertiser should create a new announcement', (done) => {
+    it('should create a new announcement', (done) => {
       request(app)
         .post('/api/v1/announcement')
         .send(createdData.announcement)
@@ -149,7 +149,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('advertiser should not create an announcement with invalid input', (done) => {
+    it('should not create an announcement with invalid input', (done) => {
       request(app)
         .post('/api/v1/announcement')
         .send({ title: '' })
@@ -159,7 +159,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('advertiser should update a specific announcement', (done) => {
+    it('should update a specific announcement', (done) => {
       request(app)
         .patch(`/api/v1/announcement/${+createdData.announcement.id}`)
         .set('Authorization', createdData.user.token)
@@ -183,7 +183,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('advertiser should not update announcement status', (done) => {
+    it('should not update announcement status', (done) => {
       request(app)
         .patch(`/api/v1/announcement/${+createdData.announcement.id}`)
         .set('Authorization', createdData.user.token)
@@ -207,7 +207,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('advertiser should view all his/her announcements', (done) => {
+    it('should view all his/her announcements', (done) => {
       request(app)
         .get('/api/v1/announcement')
         .set('Authorization', createdData.user.token)
@@ -261,7 +261,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(15000);
-    it('advertiser should not delete announcement', (done) => {
+    it('should not delete announcement', (done) => {
       request(app)
         .delete(`/api/v1/announcement/${+createdData.announcement.id}`)
         .set('Authorization', createdData.user.token)
@@ -273,6 +273,27 @@ describe('User', () => {
     it('admin should delete announcement', (done) => {
       request(app)
         .delete(`/api/v1/announcement/${+createdData.announcement.id}`)
+        .set('Authorization', TEST_TOKEN)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          return done();
+        });
+    }).timeout(15000);
+  });
+
+  describe('Account management', () => {
+    it('should not delete an advertiser', (done) => {
+      request(app)
+        .delete(`/api/v1/user/${createdData.user.id}`)
+        .set('Authorization', createdData.user.token)
+        .end((err, res) => {
+          expect(res.status).to.equal(401);
+          return done();
+        });
+    }).timeout(15000);
+    it('should delete an advertiser', (done) => {
+      request(app)
+        .delete(`/api/v1/user/${createdData.user.id}`)
         .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(200);

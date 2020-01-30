@@ -130,4 +130,25 @@ export default class User {
         .catch(reject);
     });
   }
+
+  static delete(currentUser, userId) {
+    return new Promise((resolve, reject) => {
+      const query = {
+        text: 'select f_delete_user($1,$2);',
+        params: [currentUser, userId],
+      };
+      Db.query(query)
+        .then((queryRes) => {
+          const results = queryRes.rows[0].f_delete_user;
+          if (results.status === 'success') {
+            resolve(results.message);
+          } else {
+            const newError = new Error(results.message);
+            newError.status = +results.status;
+            reject(newError);
+          }
+        })
+        .catch(reject);
+    });
+  }
 }
