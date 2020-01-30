@@ -78,7 +78,7 @@ export default class AnouncementController {
           .then((queryRes) => {
             const results = queryRes.rows[0].f_create_announcement;
             if (results.status === 'success') {
-              resolve(results);
+              resolve(results.data);
             } else {
               const newError = new Error(results.message);
               newError.status = 401;
@@ -99,6 +99,27 @@ export default class AnouncementController {
       Db.query(query)
         .then((queryRes) => {
           const results = queryRes.rows[0].f_update_announcement;
+          if (results.status === 'success') {
+            resolve(results.message);
+          } else {
+            const newError = new Error(results.message);
+            newError.status = Number(results.status);
+            reject(newError);
+          }
+        })
+        .catch(reject);
+    });
+  }
+
+  static delete(currentUser, announcementId) {
+    return new Promise((resolve, reject) => {
+      const query = {
+        text: 'select f_delete_announcement($1,$2);',
+        params: [currentUser, announcementId],
+      };
+      Db.query(query)
+        .then((queryRes) => {
+          const results = queryRes.rows[0].f_delete_announcement;
           if (results.status === 'success') {
             resolve(results.message);
           } else {
