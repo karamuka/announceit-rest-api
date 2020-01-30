@@ -33,7 +33,7 @@ const createdData = {
 
 describe('Ganeral', () => {
   describe('Check CORS', () => {
-    it('it should respond with available http methods for the server', (done) => {
+    it('should respond with available http methods for the server', (done) => {
       request(app)
         .options('')
         .end((err, res) => {
@@ -42,8 +42,8 @@ describe('Ganeral', () => {
         });
     });
   });
-  describe('Check routes availability', () => {
-    it('it should respond with 404 not found', (done) => {
+  describe('Endpoints availability', () => {
+    it('should respond with 404 not found', (done) => {
       request(app)
         .put('')
         .end((err, res) => {
@@ -56,7 +56,7 @@ describe('Ganeral', () => {
 
 describe('User', () => {
   describe('Authentication', () => {
-    it('should create a new user account', (done) => {
+    it('should create a new account', (done) => {
       request(app)
         .post('/api/v1/auth/signup')
         .send(createdData.user)
@@ -81,7 +81,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('should not create a user with invalid input', (done) => {
+    it('should not create a with invalid input', (done) => {
       request(app)
         .post('/api/v1/auth/signup')
         .send({ email: 'invalid@email' })
@@ -90,7 +90,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('should authenticate a user with valid credentials', (done) => {
+    it('should authenticate a with valid credentials', (done) => {
       request(app)
         .post('/api/v1/auth/signin')
         .send({
@@ -102,7 +102,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('should not authenticate a user with invalid credentials', (done) => {
+    it('should not authenticate a with invalid credentials', (done) => {
       request(app)
         .post('/api/v1/auth/signin')
         .send({
@@ -207,7 +207,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('user should not update an announcement with invalid auth token', (done) => {
+    it('should not update an announcement with invalid auth token', (done) => {
       request(app)
         .patch(`/api/v1/announcements/${+createdData.announcement.id}`)
         .set('Authorization', 'vvbifbiusfvoun')
@@ -228,7 +228,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('user should not view announcements with invalid auth token', (done) => {
+    it('should not view announcements with invalid auth token', (done) => {
       request(app)
         .get('/api/v1/announcements')
         .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
@@ -237,7 +237,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('user should view announcements by status', (done) => {
+    it('should view announcements by status', (done) => {
       request(app)
         .get('/api/v1/announcements/?status=pending')
         .set('Authorization', createdData.user.token)
@@ -246,7 +246,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('user should view a specific announcement', (done) => {
+    it('should view a specific announcement', (done) => {
       request(app)
         .get(`/api/v1/announcements/${+createdData.announcement.id}`)
         .set('Authorization', createdData.user.token)
@@ -255,7 +255,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('user should not view an announcement with invalid id', (done) => {
+    it('should not view an announcement with invalid id', (done) => {
       request(app)
         .get('/api/v1/announcements/1545')
         .set('Authorization', createdData.user.token)
@@ -264,7 +264,7 @@ describe('User', () => {
           return done();
         });
     }).timeout(30000);
-    it('user should not view an announcement with invalid auth token', (done) => {
+    it('should not view an announcement with invalid auth token', (done) => {
       request(app)
         .get(`/api/v1/announcements/${+createdData.announcement.id}`)
         .set('Authorization', '')
