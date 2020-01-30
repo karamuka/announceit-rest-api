@@ -68,9 +68,6 @@ describe('User', () => {
         .send(createdData.user)
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          if (err) {
-            return done(err);
-          }
           createdData.user.id = res.body.data.id;
           createdData.user.token = res.body.data.token;
           return done();
@@ -82,9 +79,6 @@ describe('User', () => {
         .send({ email: 'invalid@email' })
         .end((err, res) => {
           expect(res.status).to.equal(422);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -97,9 +91,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -112,9 +103,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -128,9 +116,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          if (err) {
-            return done(err);
-          }
           createdData.announcement.id = res.body.data.id;
           return done();
         });
@@ -142,9 +127,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(422);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -157,9 +139,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -172,9 +151,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -187,9 +163,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -202,9 +175,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -214,9 +184,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -226,9 +193,6 @@ describe('User', () => {
         .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -238,9 +202,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -250,9 +211,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -262,9 +220,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(404);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -274,9 +229,6 @@ describe('User', () => {
         .set('Authorization', '')
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -286,9 +238,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -298,9 +247,6 @@ describe('User', () => {
         .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
