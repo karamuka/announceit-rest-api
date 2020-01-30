@@ -75,7 +75,7 @@ export default class User {
               });
             } else {
               const newError = new Error(results.message);
-              newError.status = 422;
+              newError.status = +results.status;
               reject(newError);
             }
           })

@@ -22,7 +22,7 @@ const createdData = {
   user: {
     id: undefined,
     token: undefined,
-    email: `${Date.now()}test@announceit.com`,
+    email: `${Date.now()}@announceit.com`,
     password: 'testit@announceit',
     firstName: 'john',
     lastName: 'doe',
@@ -38,9 +38,6 @@ describe('Ganeral', () => {
         .options('')
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     });
@@ -51,9 +48,6 @@ describe('Ganeral', () => {
         .put('')
         .end((err, res) => {
           expect(res.status).to.equal(404);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     });
@@ -68,11 +62,22 @@ describe('User', () => {
         .send(createdData.user)
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          if (err) {
-            return done(err);
-          }
           createdData.user.id = res.body.data.id;
+          createdData.user.email = res.body.data.email;
           createdData.user.token = res.body.data.token;
+          return done();
+        });
+    }).timeout(15000);
+    it('should not create an already existing account', (done) => {
+      request(app)
+        .post('/api/v1/auth/signup')
+        .send({
+          ...createdData.user,
+          id: undefined,
+          token: undefined,
+        })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
           return done();
         });
     }).timeout(15000);
@@ -82,9 +87,6 @@ describe('User', () => {
         .send({ email: 'invalid@email' })
         .end((err, res) => {
           expect(res.status).to.equal(422);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -97,9 +99,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -107,14 +106,11 @@ describe('User', () => {
       request(app)
         .post('/api/v1/auth/signin')
         .send({
-          email: 'invalid@email',
-          password: 'inva@pass',
+          email: createdData.user.email,
+          password: `${createdData.user.password}15`,
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -128,9 +124,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(201);
-          if (err) {
-            return done(err);
-          }
           createdData.announcement.id = res.body.data.id;
           return done();
         });
@@ -142,9 +135,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(422);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -157,9 +147,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -172,9 +159,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -187,9 +171,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -202,9 +183,6 @@ describe('User', () => {
         })
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -214,9 +192,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -226,9 +201,6 @@ describe('User', () => {
         .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -238,9 +210,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -250,9 +219,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -262,21 +228,15 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(404);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
     it('user should not view an announcement with invalid auth token', (done) => {
       request(app)
         .get(`/api/v1/announcement/${+createdData.announcement.id}`)
-        .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
+        .set('Authorization', '')
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -286,9 +246,6 @@ describe('User', () => {
         .set('Authorization', createdData.user.token)
         .end((err, res) => {
           expect(res.status).to.equal(401);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
@@ -298,9 +255,6 @@ describe('User', () => {
         .set('Authorization', TEST_TOKEN)
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     }).timeout(15000);
