@@ -271,7 +271,7 @@ describe('User', () => {
     it('user should not view an announcement with invalid auth token', (done) => {
       request(app)
         .get(`/api/v1/announcement/${+createdData.announcement.id}`)
-        .set('Authorization', 'INVALID=&&_0bisvonlsfkvsvlmsfvh')
+        .set('Authorization', '')
         .end((err, res) => {
           expect(res.status).to.equal(401);
           if (err) {
