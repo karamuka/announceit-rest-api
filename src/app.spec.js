@@ -38,9 +38,6 @@ describe('Ganeral', () => {
         .options('')
         .end((err, res) => {
           expect(res.status).to.equal(200);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     });
@@ -51,9 +48,6 @@ describe('Ganeral', () => {
         .put('')
         .end((err, res) => {
           expect(res.status).to.equal(404);
-          if (err) {
-            return done(err);
-          }
           return done();
         });
     });
