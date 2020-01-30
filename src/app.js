@@ -1,12 +1,11 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { Auth, Announcements } from './routes';
+import { Auth, Announcements, User } from './routes';
 
 dotenv.config();
 
 const app = express();
-const HOST = process.env.HOST || '0.0.0.0';
-const PORT = process.env.PORT || 3000;
+const { HOST, PORT } = process.env;
 
 // Handle CORS
 app.use((req, res, next) => {
@@ -27,6 +26,7 @@ app.use(express.json());
 
 app.use('/api/v1/auth', Auth);
 app.use('/api/v1/announcement', Announcements);
+app.use('/api/v1/user', User);
 
 // handle 404
 app.use((req, res, next) => {

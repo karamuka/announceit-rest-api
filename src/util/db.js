@@ -13,19 +13,15 @@ export default class Database {
   static query({ text, params }) {
     return new Promise((resolve, reject) => {
       const client = new Client({ connectionString: connStr });
-      client.connect((err) => {
-        if (err) {
-          reject(err);
-        } else {
-          client.query(text, params, (queryErr, queryRes) => {
-            if (queryErr) {
-              reject(queryErr);
-            } else {
-              client.end();
-              resolve(queryRes);
-            }
-          });
-        }
+      client.connect(() => {
+        client.query(text, params, (queryErr, queryRes) => {
+          if (queryErr) {
+            reject(queryErr);
+          } else {
+            client.end();
+            resolve(queryRes);
+          }
+        });
       });
     });
   }

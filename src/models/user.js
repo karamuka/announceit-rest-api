@@ -109,4 +109,25 @@ export default class User {
         .catch(reject);
     });
   }
+
+  static getAll(currentUser) {
+    return new Promise((resolve, reject) => {
+      const query = {
+        text: 'select f_get_users($1);',
+        params: [currentUser],
+      };
+      Db.query(query)
+        .then((queryRes) => {
+          const results = queryRes.rows[0].f_get_users;
+          if (results.status === 'success') {
+            resolve(results.data);
+          } else {
+            const newError = new Error(results.message);
+            newError.status = +results.status;
+            reject(newError);
+          }
+        })
+        .catch(reject);
+    });
+  }
 }
